@@ -1,0 +1,4 @@
+﻿  소스.cpp
+C:\Users\realj\Desktop\files\1_university\2-2\1. 수업자료\5. 컴퓨터그래픽스\Project\OpenGLProject\Project\Project\소스.cpp(20,53): warning C4305: '초기화 중': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\realj\Desktop\files\1_university\2-2\1. 수업자료\5. 컴퓨터그래픽스\Project\OpenGLProject\Project\Project\소스.cpp(21,52): warning C4305: '초기화 중': 'double'에서 'GLfloat'(으)로 잘립니다.
+  Project.vcxproj -> C:\Users\realj\Desktop\files\1_university\2-2\1. 수업자료\5. 컴퓨터그래픽스\Project\OpenGLProject\Project\Debug\Project.exe
