@@ -1,8 +1,12 @@
 #include <gl/glut.h>
 #include <gl/glu.h>
 #include <gl/gl.h>
+#include<math.h>
+#define Pi 3.1415
 
 GLUquadricObj* qobj = gluNewQuadric();
+static int view = 0, viewValue = 0;  //3가지 시점으로 볼 수 있게 해주는 변수
+
 
 void Reshape(int w, int h) {
     glViewport(0, 0, (GLsizei)w, (GLsizei)h);
@@ -30,22 +34,41 @@ void MyInit(void) {
     glEnable(GL_DEPTH_TEST);
 }
 
+void drawLines() {
+    
+    //트리 주위를 감는 선 그리기
+    GLfloat Size[2], Angle;
+    glColor3f(1.0, 0.0, 0.0);
+    glGetFloatv(GL_POINT_SIZE_RANGE, Size);
+    glPointSize(Size[0] * 10);
+    glBegin(GL_POINTS);
+    for (Angle = 0.0; Angle <= 2.0 * Pi; Angle += Pi / 20.0) {
+        glVertex3f(0.5 * cos(Angle), 1.0-Angle, 0.5 * sin(Angle));
+        
+    }
+    glEnd();
 
+
+
+}
 void MyDisplay()
 {
-    glViewport(50, 50, 500, 500); 
+    glViewport(50, 50, 500, 500);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
 
+    gluQuadricDrawStyle(qobj, GLU_LINE);
+
+    glRotatef(viewValue, 1, 1, 0);
     glPushMatrix();
     glTranslatef(0, -1, 0);
     glRotatef(90.0, 1.0, 0.0, 0.0); //90도만큼 x축으로 회전
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
-    gluCylinder(qobj, 0.5, 0.5, 0.8, 3, 3);//네 번째 parameter가 height
+    gluCylinder(qobj, 0.3, 0.3, 0.8, 10, 8);//네 번째 parameter가 height
     glPopMatrix();
 
     glPushMatrix();
@@ -53,20 +76,47 @@ void MyDisplay()
     glRotatef(270, 1.0, 0.0, 0.0); //90도만큼 x축으로 회전
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
-    gluCylinder(qobj, 1.0, 0.0, 2.0, 20, 8);
+    gluCylinder(qobj, 1.0, 0.0, 2.0, 12, 8);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0, -0.5, 0);
+    glRotatef(270, 0.5, 0.0, 0.0); //90도만큼 x축으로 회전
+    glEnable(GL_LIGHTING);
+    glShadeModel(GL_SMOOTH);
+    gluCylinder(qobj, 0.9, 0.0, 2.0, 11.5, 8);
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslatef(0, 0, 0);
+    glEnable(GL_LIGHTING);
+    glShadeModel(GL_SMOOTH);
+    
+    glPushMatrix();
+    glRotatef(270, 0.5, 0.0, 0.0); //90도만큼 x축으로 회전
+    gluCylinder(qobj, 0.8, 0.0, 2.0, 11, 8);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0, 2.0, 0);
+    glRotatef(270, 1, 0.0, 0.0); //90도만큼 x축으로 회전
+    glutWireSphere(0.2, 20, 20);
+    glPopMatrix();
+    
     glPopMatrix();
 
     /*뒷면 그리는 부분*/
     glPushMatrix();
     glColor3f(1.0, 0.0, 0.0);
-        glBegin(GL_POLYGON);
-        glVertex3f(-2.0f, -2.0f, -1.0f);
-        glVertex3f(2.0f, -2.0f, -1.0f);
-        glVertex3f(2.0f, 2.0f, -1.0f);
-        glVertex3f(-2.0f, 2.0f, -1.0f);
-        glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3f(-2.0f, -2.0f, -1.0f);
+    glVertex3f(2.0f, -2.0f, -1.0f);
+    glVertex3f(2.0f, 2.0f, -1.0f);
+    glVertex3f(-2.0f, 2.0f, -1.0f);
+    glEnd();
     glPopMatrix();
-    
+
     /*다른 면 그리는 것 추가해야 함(왜 안되는지..)
     glPushMatrix();
     glBegin(GL_POLYGON);
@@ -78,9 +128,26 @@ void MyDisplay()
     glPopMatrix();
     */
 
+    drawLines();
+
     glutSwapBuffers();
 
     glFlush();
+}
+
+void MyKeyboard(unsigned char key, int x, int y) {
+    switch (key) {
+    case 'v':
+    case 'V':  //view를 3으로 나눈 나머지로 설정하여 클릭 시 3가지 시점으로 변경하도록 설정
+        view = (view + 1) % 3;
+        if (view == 0)viewValue = 0;
+        else if (view == 1) viewValue = 30;
+        else viewValue = 60;
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay();
 }
 
 int main(int argc, char* argv[])
@@ -92,6 +159,7 @@ int main(int argc, char* argv[])
     glutCreateWindow("Brown Cylinder");
     MyInit();
     glutDisplayFunc(MyDisplay);
+    glutKeyboardFunc(MyKeyboard);
     glutReshapeFunc(Reshape);
     glutMainLoop();
     return 0;
