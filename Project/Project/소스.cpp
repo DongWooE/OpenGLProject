@@ -6,7 +6,8 @@
 
 GLUquadricObj* qobj = gluNewQuadric();
 static int view = 0, viewValue = 0;  //3가지 시점으로 볼 수 있게 해주는 변수
-
+GLfloat snowPos[2] = { 0, };
+GLint snowAngle = 0;
 
 void Reshape(int w, int h) {
     glViewport(0, 0, (GLsizei)w, (GLsizei)h);
@@ -50,6 +51,40 @@ void drawLines() {
 
 
 
+}
+
+void drawSnowman() {
+
+    glTranslatef(snowPos[0], -2.5, snowPos[1]);
+    glRotatef(snowAngle, 0, 1, 0);
+    glPushMatrix();
+
+    glPushMatrix();
+    glRotatef(90, 1, 0, 0);
+    glutWireSphere(0.2, 10, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0, 0.19, 0);
+    glRotatef(90, 1, 0, 0);
+    glutWireSphere(0.18, 10, 10);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(1/sqrt(20), 1/sqrt(20), 0);
+    glRotatef(-45, 0, 0, 1);
+    glScalef(1, 3, 1);
+    glutWireCube(0.1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-1 / sqrt(20), 1 / sqrt(20), 0);
+    glRotatef(45, 0, 0, 1);
+    glScalef(1, 3, 1);
+    glutWireCube(0.1);
+    glPopMatrix();
+
+    glPopMatrix();
 }
 void MyDisplay()
 {
@@ -117,7 +152,7 @@ void MyDisplay()
     glEnd();
     glPopMatrix();
 
-    /*다른 면 그리는 것 추가해야 함(왜 안되는지..)
+    //다른 면 그리는 것 추가해야 함(왜 안되는지..)
     glPushMatrix();
     glBegin(GL_POLYGON);
     glVertex3f(-0.1f, -0.1f, -0.1f);
@@ -126,13 +161,12 @@ void MyDisplay()
     glVertex3f(0.1f, -0.1f, -0.1f);
     glEnd();
     glPopMatrix();
-    */
+    
 
     drawLines();
+    drawSnowman();
 
     glutSwapBuffers();
-
-    glFlush();
 }
 
 void MyKeyboard(unsigned char key, int x, int y) {
@@ -143,6 +177,24 @@ void MyKeyboard(unsigned char key, int x, int y) {
         if (view == 0)viewValue = 0;
         else if (view == 1) viewValue = 30;
         else viewValue = 60;
+        break;
+    case 'a' :
+        snowPos[0] = snowPos[0] - 0.1f;
+        break;
+    case 'd' :
+        snowPos[0] = snowPos[0] + 0.1f;
+        break;
+    case 'w':
+        snowPos[1] = snowPos[1] - 0.1f;
+        break;
+    case 's':
+        snowPos[1] = snowPos[1] + 0.1f;
+        break;
+    case 'q':
+        snowAngle =(snowAngle + 1)%360;
+        break;
+    case 'e':
+        snowAngle = (snowAngle - 1) % 360;
         break;
     default:
         break;
